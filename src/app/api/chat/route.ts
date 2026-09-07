@@ -2,9 +2,55 @@ import { NextResponse } from "next/server";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
+type RateLimitEntry = { count: number; resetAt: number };
+
+const rateLimitStore = new Map<string, RateLimitEntry>();
+const defaultLimit = 20;
+const defaultWindowMs = 60_000;
+
+function getClientIp(request: Request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  return forwardedFor?.split(",")[0].trim() || request.headers.get("x-real-ip") || "unknown";
+}
+
+function checkRateLimit(request: Request) {
+  const configuredLimit = Number(process.env.CHAT_RATE_LIMIT);
+  const configuredWindow = Number(process.env.CHAT_RATE_WINDOW_MS);
+  const limit = Number.isFinite(configuredLimit) && configuredLimit > 0 ? Math.floor(configuredLimit) : defaultLimit;
+  const windowMs = Number.isFinite(configuredWindow) && configuredWindow > 0 ? Math.floor(configuredWindow) : defaultWindowMs;
+  const now = Date.now();
+  const key = getClientIp(request);
+  const current = rateLimitStore.get(key);
+
+  if (rateLimitStore.size > 1000) {
+    for (const [entryKey, entry] of rateLimitStore) {
+      if (entry.resetAt <= now) rateLimitStore.delete(entryKey);
+    }
+  }
+
+  if (!current || current.resetAt <= now) {
+    rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
+    return { allowed: true, remaining: Math.max(0, limit - 1), retryAfter: 0, limit };
+  }
+
+  current.count += 1;
+  if (current.count > limit) {
+    return { allowed: false, remaining: 0, retryAfter: Math.ceil((current.resetAt - now) / 1000), limit };
+  }
+
+  return { allowed: true, remaining: Math.max(0, limit - current.count), retryAfter: 0, limit };
+}
+
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit(request);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment before trying again." },
+      { status: 429, headers: { "Retry-After": String(rateLimit.retryAfter), "X-RateLimit-Limit": String(rateLimit.limit), "X-RateLimit-Remaining": "0" } },
+    );
+  }
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: "Add GEMINI_API_KEY to your .env.local file to start chatting." }, { status: 500 });
+  if (!apiKey) return NextResponse.json({ error: "Add GEMINI_API_KEY to your .env.local file to start chatting." }, { status: 500, headers: { "X-RateLimit-Remaining": String(rateLimit.remaining) } });
   try {
     const { messages, model = "Gemini 3.6 Flash" } = await request.json() as { messages?: ChatMessage[]; model?: string };
     if (!messages?.length) return NextResponse.json({ error: "A message is required." }, { status: 400 });
@@ -56,6 +102,6 @@ export async function POST(request: Request) {
         read().catch(() => controller.close());
       },
     });
-    return new Response(stream, { headers: { "Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache, no-transform", Connection: "keep-alive" } });
+    return new Response(stream, { headers: { "Content-Type": "text/event-stream; charset=utf-8", "Cache-Control": "no-cache, no-transform", Connection: "keep-alive", "X-RateLimit-Remaining": String(rateLimit.remaining) } });
   } catch { return NextResponse.json({ error: "The request could not be processed. Please try again." }, { status: 500 }); }
 }
