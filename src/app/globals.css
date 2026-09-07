@@ -44,6 +44,22 @@ body { color:var(--ink); }
 .topbar label { color:#c4d7c8; }
 .topbar label i { width:7px; height:7px; box-shadow:0 0 12px #aeea72; }
 .topbar select { color:#d8ead8; }
+.workspace-status { display:flex; align-items:center; gap:9px; color:#c4d7c8; font-size:12px; font-weight:700; }
+.workspace-status i { width:7px; height:7px; border-radius:50%; background:#aeea72; box-shadow:0 0 12px #aeea72; }
+.search-panel { position:absolute; z-index:5; top:64px; right:48px; width:min(390px,calc(100% - 32px)); padding:16px; border:1px solid rgba(194,230,198,.2); border-radius:14px; background:rgba(10,27,23,.94); box-shadow:0 22px 60px rgba(0,0,0,.4); backdrop-filter:blur(20px); }
+.search-heading { display:flex; align-items:center; justify-content:space-between; color:#e0efdf; font-size:12px; }
+.search-heading button { padding:0 3px; background:none; color:#789388; font-size:20px; }
+.search-panel > input { width:100%; margin-top:13px; padding:11px 12px; border:1px solid rgba(194,230,198,.16); border-radius:8px; outline:none; background:rgba(215,239,214,.06); color:#e9f4e8; font-size:12px; }
+.search-panel > input:focus { border-color:rgba(198,239,139,.55); }
+.search-panel > input::placeholder { color:#718b80; }
+.search-results { max-height:300px; margin-top:10px; overflow:auto; }
+.search-results button { display:flex; align-items:flex-start; gap:10px; width:100%; padding:10px 8px; border-radius:8px; background:none; color:#b7cdbd; text-align:left; }
+.search-results button:hover { background:rgba(194,235,148,.1); }
+.search-results button > span:first-child { color:#acd77d; }
+.search-results strong,.search-results small { display:block; }
+.search-results strong { overflow:hidden; color:#dcebdc; font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+.search-results small { margin-top:4px; color:#789388; font:9px 'DM Mono'; }
+.search-results p { padding:12px 8px; color:#789388; font-size:11px; }
 .model-caret { color:#779588; }
 .top-actions button,.menu { color:#77968a; }
 .top-actions button:hover,.menu:hover { color:#d5ecd3; }
@@ -101,6 +117,9 @@ body { color:var(--ink); }
 @keyframes stream-blink { 50% { opacity:.18; } }
 @media (max-width:720px) {
 	.topbar { padding:0 18px; background:rgba(9,20,18,.45); }
+	.workspace-status { margin-right:auto; margin-left:12px; }
+	.workspace-status span { display:none; }
+	.search-panel { top:58px; right:16px; }
 	.sidebar { background:rgba(8,20,18,.96); }
 	.welcome { padding-top:58px; }
 	.welcome h1 { letter-spacing:-2.5px; }
