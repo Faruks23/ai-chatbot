@@ -1,0 +1,34 @@
+.brand span { color:#9aa59d; font:500 9px 'DM Mono'; letter-spacing:0; margin-left:2px; }
+.history-item b { margin-left:auto; color:#9baa98; font:500 8px 'DM Mono'; text-transform:uppercase; }
+.capability-note { margin:0 10px 15px; padding:14px 12px; border:1px solid #d9ded3; background:rgba(255,255,255,.38); border-radius:7px; }
+.capability-note strong,.capability-note span { display:block; }
+.capability-note strong { color:#53634f; font-size:10px; }
+.capability-note span { color:#89958b; font-size:9px; line-height:1.55; margin-top:5px; }
+.model-caret { color:#a1aaa2; font-size:11px; }
+.welcome { max-width:760px; }
+.welcome-copy { max-width:480px; margin-bottom:30px; }
+.capability-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.capability { min-height:94px; padding:15px 35px 15px 14px; display:flex; align-items:flex-start; gap:11px; position:relative; border:1px solid #dfe4d9; background:rgba(255,255,255,.42); border-radius:8px; color:#536158; text-align:left; transition:transform .2s ease, border-color .2s ease, background .2s ease; }
+.capability:hover { transform:translateY(-2px); border-color:#b5ca87; background:#fff; }
+.capability-icon { display:grid; place-items:center; width:28px; height:28px; flex:0 0 28px; border-radius:7px; background:#e6edd8; color:#759346; font-size:15px; }
+.capability strong,.capability small { display:block; }
+.capability strong { color:#3f5145; font-size:12px; }
+.capability small { color:#87938a; font-size:10px; line-height:1.45; margin-top:5px; }
+.capability > b { position:absolute; top:15px; right:14px; color:#98b06c; font-size:14px; font-weight:400; }
+.prompt-strip { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin-top:20px; }
+.prompt-strip > span { color:#a0aaa1; font:500 9px 'DM Mono'; text-transform:uppercase; letter-spacing:.7px; margin-right:3px; }
+.prompt-strip button { border:1px solid #e1e5dc; border-radius:20px; background:transparent; color:#77837a; padding:7px 10px; font-size:10px; }
+.prompt-strip button:hover { border-color:#b5ca87; color:#536b42; background:#fff; }
+.message-body { min-width:0; flex:1; }
+.message-meta { display:flex; align-items:center; gap:10px; }
+.message-meta small { margin-bottom:8px; }
+.copy { padding:0; background:none; color:#a1aaa2; font:500 9px 'DM Mono'; }
+.copy:hover { color:#65833e; }
+@media (max-width:720px) {
+  .brand span,.capability-note { display:none; }
+  .welcome { padding-top:60px; }
+  .capability-grid { grid-template-columns:1fr; }
+  .capability { min-height:76px; }
+  .prompt-strip { margin-top:16px; }
+  .prompt-strip > span { width:100%; }
+}
